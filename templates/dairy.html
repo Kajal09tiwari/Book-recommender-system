@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Notes</title>
+	
+</head>
+<style>
+	 .text-white {
+        color: white
+    }
+
+    body {
+        background: url('https://images.shiksha.com/mediadata/images/1580469274phptHKvhe.jpeg') no-repeat center center fixed;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+
+    header {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 12px;
+        font-size: 24px;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: flex-end;
+        padding: 8px 15px;
+    }
+
+    .navbar-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar-nav {
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar-nav li {
+        margin-right: 20px;
+    }
+
+    .navbar-nav li:last-child {
+        margin-right: 0;
+    }
+
+    .navbar-nav a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        font-size: 24px;
+    }
+	.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    color:black;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color:black;
+}
+
+#new_entry_btn {
+    background-color: #4CAF50;
+    border: none;
+    color: black;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.entry_list {
+    margin-top: 20px;
+    color:black;
+}
+
+.entry_list h2 {
+    margin-bottom: 10px;
+}
+
+.entry_list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.entry_list li {
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+.entry_content {
+    margin-top: 20px;
+    color:black;
+}
+
+.entry_content.hidden {
+    display: none;
+}
+
+.entry_content h2 {
+    margin-bottom: 10px;
+}
+
+.entry_content textarea {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 10px;
+}
+
+.button_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+</style>
+<body>
+<body style="background-color:White">
+
+<nav class="navbar" style="background-color:White">
+    <ul class="nav navbar-nav ">
+        <li><a href="/">Home</a></li>
+        <li><a href="/recommend">Recommend</a></li>
+        <li><a href="/dairy">Notes</a></li>
+    </ul>
+</nav>
+
+
+	<div class="container">
+		<div class="header">
+			<h1>My Notes</h1>
+			<button id="new_entry_btn">New Entry</button>
+		</div>
+		<div class="entry_list">
+			<h2>Entries</h2>
+			<ul id="entries"></ul>
+		</div>
+		<div class="entry_content hidden">
+			<h2 id="entry_title"></h2>
+			<textarea id="entry_text"></textarea>
+			<div class="button_row">
+				<button id="save_btn">Save</button>
+				<button id="cancel_btn">Cancel</button>
+			</div>
+<div class="entry_content hidden">
+    <h2 id="entry_title">Your Custom Title Placeholder</h2>
+    <textarea id="entry_text" placeholder="Your Custom Text Placeholder"></textarea>
+    <div class="button_row">
+        <button id="save_btn">Save</button>
+        <button id="cancel_btn">Cancel</button>
+    </div>
+</div>
+
+		</div>
+	</div>
+
+	<script >
+		
+var newEntryBtn = document.getElementById("new_entry_btn");
+var entryList = document.getElementById("entries");
+var entryContent = document.querySelector(".entry_content");
+var entryTitle = document.getElementById("entry_title");
+var entryText = document.getElementById("entry_text");
+var saveBtn = document.getElementById("save_btn");
+var cancelBtn = document.getElementById("cancel_btn");
+var entries = JSON.parse(localStorage.getItem("entries")) || [];
+displayEntries();
+newEntryBtn.addEventListener("click", function() {
+  entryTitle.innerText = "New Entry";
+  entryText.value = "";
+  entryContent.classList.remove("hidden");
+});
+saveBtn.addEventListener("click", function() {
+  var title = entryTitle.innerText;
+  var text = entryText.value;
+  if (title.trim() == "" || text.trim() == "") {
+    return;
+  }
+
+  entries.push({title: title, text: text, date: new Date()});
+  localStorage.setItem("entries", JSON.stringify(entries));
+
+  displayEntries();
+  entryContent.classList.add("hidden");
+});
+cancelBtn.addEventListener("click", function() {
+  entryContent.classList.add("hidden");
+});
+function displayEntries() {
+  entryList.innerHTML = "";
+  
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    var li = document.createElement("li");
+    li.innerText = entry.title + " (" + entry.date.toLocaleString() + ")";
+    li.setAttribute("data-index", i);
+    li.addEventListener("click", function() {
+      var index = parseInt(this.getAttribute("data-index"));
+      displayEntry(index);
+    });
+    entryList.appendChild(li);
+  }
+}
+function displayEntry(index) {
+  var entry = entries[index];
+  entryTitle.innerText = entry.title + " (" + entry.date.toLocaleString() + ")";
+  entryText.value = entry.text;
+  entryContent.classList.remove("hidden");
+}
+
+
+function deleteEntry(index) {
+  entries.splice(index, 1);
+  localStorage.setItem("entries", JSON.stringify(entries));
+  displayEntries();
+}
+
+function displayEntries() {
+  entryList.innerHTML = "";
+
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    var li = document.createElement("li");
+    li.innerText = entry.title + " (" + entry.date.toLocaleString() + ")";
+
+   
+    var deleteButton = document.createElement("button");
+    deleteButton.innerText = "Delete";
+    deleteButton.setAttribute("data-index", i);
+    deleteButton.addEventListener("click", function() {
+      var index = parseInt(this.getAttribute("data-index"));
+      deleteEntry(index);
+    });
+
+    
+    li.appendChild(deleteButton);
+    entryList.appendChild(li);
+  }
+}
+
+
+
+	</script>
+</body>
+</html>
